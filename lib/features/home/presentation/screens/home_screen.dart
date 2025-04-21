@@ -23,6 +23,7 @@ class HomeScreen extends StatelessWidget {
             onPressed: () {
               habit.titleController.clear();
               habit.descriptionController.clear();
+              habit.categoryController.text = 'Urgent & Important';
               showDialog(
                 context: context,
                 builder:
@@ -98,7 +99,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 ),
                                 DropdownButtonFormField(
-                                  value: 'Urgent & Important',
+                                  value: habit.categoryController.text,
                                   items: habit.categoryDrop,
                                   onChanged: (value) {
                                     habit.categoryController.text = value.toString();
@@ -118,12 +119,11 @@ class HomeScreen extends StatelessWidget {
                                     Expanded(
                                       child: MyButton(
                                         onPressed: () {
-                                          if (habit.formKey.currentState!
-                                              .validate()) {
+                                          if (habit.formKey.currentState!.validate()) {
                                             habit.insertDB(
                                               title: habit.titleController.text,
                                               des: habit.descriptionController.text,
-                                              category: (habit.categoryController.text == '') ? 'Urgent & Important' : habit.categoryController.text,
+                                              category: habit.categoryController.text,
                                             );
                                             Navigator.pop(context);
                                           }
