@@ -11,18 +11,34 @@ class BuildItemCat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            model['title'].toString(),
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
+    return BlocConsumer<HabitCubit,HabitState>(
+      listener: (context,state){},
+      builder: (context,state){
+        final isDone = model['state'] == 'Yes';
+        return Row(
+          children: [
+            Checkbox(
+              value: isDone,
+              onChanged:
+                  (value) => BlocProvider.of<HabitCubit>(
+                context,
+              ).updateStateDB(id: model['id'], state: value! ? 'Yes' : 'No'),
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
+            Expanded(
+              child: Text(
+                model['title'].toString(),
+                style: TextStyle(
+                  color: isDone ? Colors.grey : Colors.black,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         );
+      },
+    );
   }
 }

@@ -146,11 +146,11 @@ class HabitCubit extends Cubit<HabitState> {
         habits.add(element);
       });
 
-      red.sort((a, b) => a['state'].compareTo(b['state']),);
-      orange.sort((a,b) => a['state'].compareTo(b['state']),);
-      blue.sort((a,b) => a['state'].compareTo(b['state']),);
-      green.sort((a,b) => a['state'].compareTo(b['state']),);
-      habits.sort((a,b) => a['state'].compareTo(b['state']),);
+      red.sort((a,b) => a['state'].compareTo(b['state']));
+      orange.sort((a,b) => a['state'].compareTo(b['state']));
+      blue.sort((a,b) => a['state'].compareTo(b['state']));
+      green.sort((a,b) => a['state'].compareTo(b['state']));
+      habits.sort((a,b) => a['state'].compareTo(b['state']));
 
       titleController.clear();
       descriptionController.clear();
