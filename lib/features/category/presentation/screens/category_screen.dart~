@@ -32,20 +32,7 @@ class CategoryScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Expanded(
-                    child: Row(
-                      children: [
-                        BuildCategory(title: "Urgent & Unimportant", color: Colors.blue, tasks: habit.blue,),
-                        SizedBox(width: 20),
-                        BuildCategory(title: "Not Urgent & Unimportant", color: Colors.green, tasks: habit.green,),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+
             ],
           ),
         );

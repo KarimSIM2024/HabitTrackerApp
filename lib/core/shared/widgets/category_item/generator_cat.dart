@@ -11,7 +11,7 @@ class GeneratorCat extends StatelessWidget {
     if (tasks.isNotEmpty) {
       return ListView.separated(
         itemBuilder: (context, index) => BuildItemCat(model: tasks[index],),
-        separatorBuilder: (context, index) => SizedBox(height: 20.0,),
+        separatorBuilder: (context, index) => SizedBox(height: 10.0,),
         itemCount: tasks.length,
       );
     }

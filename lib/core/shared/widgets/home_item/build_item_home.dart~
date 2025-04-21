@@ -83,10 +83,7 @@ class BuildItemHome extends StatelessWidget {
                       ),
                       IconButton(
                         onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => EditDialog(model: model),
-                          );
+                          showDialog(context: context, builder: builder)
                         },
                         icon: Icon(
                           Icons.edit_outlined,

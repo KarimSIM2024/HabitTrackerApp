@@ -10,6 +10,5 @@ class CreateDBState extends HabitState {}
 class OpenDBState extends HabitState {}
 class InsertDBState extends HabitState {}
 class GetDBState extends HabitState {}
-class UpdateStateDBState extends HabitState {}
-class UpdateTitleDBState extends HabitState {}
+class UpdateDBState extends HabitState {}
 class DeleteDBState extends HabitState {}

@@ -52,7 +52,13 @@ class HabitCubit extends Cubit<HabitState> {
   ];
 
   List<Map>habits=[];
-  List<String>category=[];
+  List<Map>doneHabits=[];
+  List<Map>red=[];
+  List<Map>orange=[];
+  List<Map>blue=[];
+  List<Map>green=[];
+
+
 
   void changeBottomNav(int index){
     currentIndex=index;
@@ -119,9 +125,24 @@ class HabitCubit extends Cubit<HabitState> {
 
   void getDB(database) async {
     habits = [];
-    category=[];
+    red=[];
+    orange=[];
+    blue=[];
+    green=[];
     await database!.rawQuery('SELECT * FROM information').then((value) {
       value.forEach((element) {
+        if(element['category']=='Urgent & Important'){
+          red.add(element);
+        }
+        else if(element['category']=='Not Urgent & Important'){
+          orange.add(element);
+        }
+        else if(element['category']=='Urgent & Unimportant'){
+          blue.add(element);
+        }
+        else if(element['category']=='Not Urgent & Unimportant'){
+          green.add(element);
+        }
         habits.add(element);
       });
       titleController.clear();
@@ -130,32 +151,32 @@ class HabitCubit extends Cubit<HabitState> {
     });
   }
 
-  void updateFavDB({required int id, required String fav}) async {
+  void updateStateDB({required int id, required String state}) async {
     await database!
-        .rawUpdate('UPDATE information SET  fav = ? WHERE id = ?', [fav, id])
+        .rawUpdate('UPDATE information SET  state = ? WHERE id = ?', [state, id])
         .then((value) {
       getDB(database);
-      emit(UpdateDBState());
+      emit(UpdateStateDBState());
       debugPrint("Data Updated");
     });
   }
 
   void updateDB({
     required int id,
-    required String firstname,
-    required String lastname,
-    required String num,
+    required String title,
+    required String des,
+    required String category,
   }) async {
     await database!
-        .rawUpdate('UPDATE information SET  Firstname = ?, Lastname = ?, num = ? WHERE id = ?', [
-      firstname,
-      lastname,
-      num,
+        .rawUpdate('UPDATE information SET  title = ?, description = ?, category = ? WHERE id = ?', [
+      title,
+      des,
+      category,
       id,
     ])
         .then((value) {
       getDB(database);
-      emit(UpdateDBState());
+      emit(UpdateTitleDBState());
       debugPrint("Data Updated");
     });
   }
