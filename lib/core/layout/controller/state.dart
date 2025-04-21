@@ -1,0 +1,14 @@
+abstract class HabitState {}
+
+class HabitInitialState extends HabitState {}
+
+class HabitBottomNavState extends HabitState {}
+
+class CategoryUpdatedState extends HabitState {}
+
+class CreateDBState extends HabitState {}
+class OpenDBState extends HabitState {}
+class InsertDBState extends HabitState {}
+class GetDBState extends HabitState {}
+class UpdateDBState extends HabitState {}
+class DeleteDBState extends HabitState {}

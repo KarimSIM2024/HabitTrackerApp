@@ -1,0 +1,173 @@
+import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:habit_trackerr/core/layout/controller/state.dart';
+import 'package:habit_trackerr/features/home/presentation/screens/home_screen.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart' as p;
+import '../../../features/calender/presentation/screens/calender_screen.dart';
+import '../../../features/category/presentation/screens/category_screen.dart';
+import '../../../features/profile/presentation/screens/profile_screen.dart';
+
+class HabitCubit extends Cubit<HabitState> {
+  HabitCubit() : super(HabitInitialState());
+
+  static HabitCubit get(context) => BlocProvider.of(context);
+
+  int currentIndex = 0;
+  Database? database;
+  var scaffoldKey=GlobalKey<ScaffoldState>();
+  var formKey=GlobalKey<FormState>();
+  var titleController = TextEditingController();
+  var descriptionController = TextEditingController();
+  var priorityController = TextEditingController();
+  var categoryController = TextEditingController();
+
+  List<BottomNavigationBarItem>items=[
+    BottomNavigationBarItem(icon: Icon(Icons.home_outlined,size: 30), label: 'Home'),
+    BottomNavigationBarItem(icon: Icon(Icons.category_outlined,size: 30), label: 'Category'),
+    BottomNavigationBarItem(icon: Icon(Icons.calendar_month,size: 30), label: 'Calender'),
+    BottomNavigationBarItem(icon: Icon(Icons.person,size: 30), label: 'Profile'),
+  ];
+
+  List<DropdownMenuItem>categoryDrop=[
+    DropdownMenuItem(value: 'Urgent & Important', child: Text('Urgent & Important',style: TextStyle(color: Colors.red),)),
+    DropdownMenuItem(value: 'Not Urgent & Important', child: Text('Not Urgent & Important',style: TextStyle(color: Colors.orange))),
+    DropdownMenuItem(value: 'Urgent & Unimportant', child: Text('Urgent & Unimportant',style: TextStyle(color: Colors.blue))),
+    DropdownMenuItem(value: 'Not Urgent & Unimportant', child: Text('Not Urgent & Unimportant',style: TextStyle(color: Colors.green))),
+  ];
+
+  List<Widget>screens=[
+    HomeScreen(),
+    CategoryScreen(),
+    CalenderScreen(),
+    ProfileScreen(),
+  ];
+  List<String>titles=[
+    'Home',
+    'Category',
+    'Calender',
+    'Profile',
+  ];
+
+  List<Map>habits=[];
+  List<String>category=[];
+
+  void changeBottomNav(int index){
+    currentIndex=index;
+    emit(HabitBottomNavState());
+  }
+
+  void createDB() async {
+    var databasesPath = await getDatabasesPath();
+    String path = p.join(databasesPath, 'tasks.db');
+    openDB(path: path);
+    emit(CreateDBState());
+  }
+
+  void openDB({required String path}) async {
+    await openDatabase(
+      path,
+      version: 1,
+      onCreate: (Database db, int version) async {
+        // When creating the db, create the table
+        await db
+            .execute(
+          'CREATE TABLE information (id INTEGER PRIMARY KEY, title TEXT,description TEXT,category TEXT,state TEXT)',
+        )
+            .then((value) {
+          debugPrint('Table Created');
+        })
+            .catchError((error) {
+          debugPrint('Error when create table ${error.toString()}');
+        });
+      },
+      onOpen: (database) {
+        getDB(database);
+        emit(OpenDBState());
+        debugPrint('DB Opened');
+      },
+    ).then((value) {
+      database = value;
+    });
+  }
+
+  void insertDB({
+    required String title,
+    required String des,
+     String? priority,
+     String? category,
+  }) async {
+    await database!
+        .transaction((txn) async {
+      await txn.rawInsert(
+        'INSERT INTO information(title, description, category, state) VALUES(?, ?, ?, ?)',
+        [title, des, category, 'No'],
+      );
+    })
+        .then((value) {
+
+      getDB(database);
+      emit(InsertDBState());
+      debugPrint('$value Data Inserted');
+    })
+        .catchError((error) {
+      debugPrint('error when inserting data ${error.toString()}');
+    });
+  }
+
+  void getDB(database) async {
+    habits = [];
+    category=[];
+    await database!.rawQuery('SELECT * FROM information').then((value) {
+      value.forEach((element) {
+        habits.add(element);
+      });
+      titleController.clear();
+      descriptionController.clear();
+      emit(GetDBState());
+    });
+  }
+
+  void updateFavDB({required int id, required String fav}) async {
+    await database!
+        .rawUpdate('UPDATE information SET  fav = ? WHERE id = ?', [fav, id])
+        .then((value) {
+      getDB(database);
+      emit(UpdateDBState());
+      debugPrint("Data Updated");
+    });
+  }
+
+  void updateDB({
+    required int id,
+    required String firstname,
+    required String lastname,
+    required String num,
+  }) async {
+    await database!
+        .rawUpdate('UPDATE information SET  Firstname = ?, Lastname = ?, num = ? WHERE id = ?', [
+      firstname,
+      lastname,
+      num,
+      id,
+    ])
+        .then((value) {
+      getDB(database);
+      emit(UpdateDBState());
+      debugPrint("Data Updated");
+    });
+  }
+
+  void deleteDB({required int id}) async {
+    await database!
+        .rawDelete('DELETE FROM information WHERE id = ?', [id])
+        .then((value) {
+      getDB(database);
+      emit(DeleteDBState());
+    });
+  }
+
+}
+
