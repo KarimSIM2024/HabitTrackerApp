@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_trackerr/core/layout/controller/cubit.dart';
@@ -19,12 +19,12 @@ class BuildItemHome extends StatelessWidget {
       builder: (context, state) {
         var habit = HabitCubit.get(context);
         return Padding(
-          padding: const EdgeInsets.only(right: 20.0),
+          padding: const EdgeInsets.all(5.0),
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15.0),
+              borderRadius: BorderRadius.circular(20.0),
               color: HexColor('#F7FBFF'),
-              border: Border.all(color: HexColor('#00468C')),
+              border: Border.all(color: HabitCubit.primaryColor),
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -34,7 +34,7 @@ class BuildItemHome extends StatelessWidget {
                   Text(
                     model['title'].toString(),
                     style: TextStyle(
-                      color: HexColor('#00468C'),
+                      color: HabitCubit.primaryColor,
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -43,7 +43,7 @@ class BuildItemHome extends StatelessWidget {
                   Text(
                     model['description'].toString(),
                     style: TextStyle(
-                      color: HexColor('#4B7DAF'),
+                      color: HabitCubit.secondaryColor,
                       fontSize: 20.0,
                     ),
                   ),
@@ -83,7 +83,10 @@ class BuildItemHome extends StatelessWidget {
                       ),
                       IconButton(
                         onPressed: () {
-                          showDialog(context: context, builder: builder)
+                          showDialog(
+                            context: context,
+                            builder: (context) => EditDialog(model: model),
+                          );
                         },
                         icon: Icon(
                           Icons.edit_outlined,

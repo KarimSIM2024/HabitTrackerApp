@@ -8,22 +8,10 @@ class GeneratorHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (tasks.isNotEmpty) {
       return ListView.separated(
         itemBuilder: (context, index) => BuildItemHome(model: tasks[index],),
         separatorBuilder: (context, index) => SizedBox(height: 20.0,),
         itemCount: tasks.length,
       );
-    }
-    else {
-      return Center(child: Text(
-        'No Habits Yet',
-        style: TextStyle(
-          fontSize: 50.0,
-          fontWeight: FontWeight.bold,
-          color: Colors.grey[300],
-        ),
-      ),);
-    }
   }
 }

@@ -1,25 +1,31 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_trackerr/core/layout/controller/cubit.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-import '../my_button.dart';
-import '../myformfield.dart';
+import '../../../../core/shared/widgets/my_button.dart';
+import '../../../../core/shared/widgets/myformfield.dart';
 
-class EditDialog extends StatelessWidget {
+
+class EditDialog extends StatefulWidget {
   final Map model;
 
   const EditDialog({super.key, required this.model});
 
   @override
+  State<EditDialog> createState() => _EditDialogState();
+}
+
+class _EditDialogState extends State<EditDialog> {
+  @override
   Widget build(BuildContext context) {
     final habit = BlocProvider.of<HabitCubit>(context);
 
-    habit.titleController.text = model['title'];
-    habit.descriptionController.text = model['description'];
-    habit.categoryController.text = model['category'];
-    
+    habit.titleController.text = widget.model['title'];
+    habit.descriptionController.text = widget.model['description'];
+    habit.categoryController.text = widget.model['category'];
+
     return AlertDialog(
       title: Text(
         'Edit Your Task',
@@ -40,7 +46,7 @@ class EditDialog extends StatelessWidget {
               Text(
                 'Title',
                 style: TextStyle(
-                  color: HexColor('#00468C'),
+                  color: HabitCubit.primaryColor,
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,
                 ),
@@ -62,7 +68,7 @@ class EditDialog extends StatelessWidget {
               Text(
                 'Description',
                 style: TextStyle(
-                  color: HexColor('#00468C'),
+                  color: HabitCubit.primaryColor,
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,
                 ),
@@ -84,14 +90,14 @@ class EditDialog extends StatelessWidget {
               Text(
                 'Category',
                 style: TextStyle(
-                  color: HexColor('#00468C'),
+                  color: HabitCubit.primaryColor,
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               DropdownButtonFormField(
                 value: habit.categoryController.text,
-                items: habit.categoryDrop,
+                items: HabitCubit.categoryDrop,
                 onChanged: (value) {
                   habit.categoryController.text = value.toString();
                 },
@@ -110,7 +116,7 @@ class EditDialog extends StatelessWidget {
                       onPressed: () {
                         if (habit.formKey.currentState!.validate()) {
                           habit.updateDB(
-                            id: model['id'],
+                            id: widget.model['id'],
                             title: habit.titleController.text,
                             des: habit.descriptionController.text,
                             category: habit.categoryController.text,
@@ -121,7 +127,7 @@ class EditDialog extends StatelessWidget {
                       text: 'Edit Task',
                       isUpperCase: false,
                       style: TextStyle(color: Colors.white),
-                      background: HexColor('#00468C'),
+                      background: HabitCubit.primaryColor,
                     ),
                   ),
                   SizedBox(width: 10.0),
@@ -132,7 +138,7 @@ class EditDialog extends StatelessWidget {
                       },
                       text: 'Cancel',
                       isUpperCase: false,
-                      style: TextStyle(color: HexColor('#00468C')),
+                      style: TextStyle(color: HabitCubit.primaryColor),
                       background: Colors.white,
                     ),
                   ),

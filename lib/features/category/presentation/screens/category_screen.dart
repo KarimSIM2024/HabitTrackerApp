@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:habit_trackerr/core/shared/widgets/category_item/generator_cat.dart';
 import '../../../../core/layout/controller/cubit.dart';
 import '../../../../core/layout/controller/state.dart';
-import '../../../../core/shared/widgets/category_item/build_category.dart';
+import '../widgets/build_category.dart';
 
 class CategoryScreen extends StatelessWidget {
   const CategoryScreen({super.key});
@@ -14,40 +13,34 @@ class CategoryScreen extends StatelessWidget {
     return BlocConsumer<HabitCubit, HabitState>(
       listener: (context, state) {},
       builder: (context, state) {
-        var habit = HabitCubit.get(context);
-        return Scaffold(
-          body: Column(
+        final habit = HabitCubit.get(context);
+        return Column(
             children: [
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),
-                  child: Expanded(
-                    child: Row(
-                      children: [
-                        BuildCategory(title: "Urgent & Important", color: Colors.red, tasks: habit.red,),
-                        SizedBox(width: 20),
-                        BuildCategory(title: "Not Urgent & Important", color: Colors.orange, tasks: habit.orange,),
-                      ],
-                    ),
+                  child: Row(
+                    children: [
+                      BuildCategory(title: "Urgent & Important", color: Colors.red, tasks: habit.red,),
+                      SizedBox(width: 20),
+                      BuildCategory(title: "Not Urgent & Important", color: Colors.orange, tasks: habit.orange,),
+                    ],
                   ),
                 ),
               ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),
-                  child: Expanded(
-                    child: Row(
-                      children: [
-                        BuildCategory(title: "Urgent & Unimportant", color: Colors.blue, tasks: habit.blue,),
-                        SizedBox(width: 20),
-                        BuildCategory(title: "Not Urgent & Unimportant", color: Colors.green, tasks: habit.green,),
-                      ],
-                    ),
+                  child: Row(
+                    children: [
+                      BuildCategory(title: "Urgent & Unimportant", color: Colors.blue, tasks: habit.blue,),
+                      SizedBox(width: 20),
+                      BuildCategory(title: "Not Urgent & Unimportant", color: Colors.green, tasks: habit.green,),
+                    ],
                   ),
                 ),
               ),
             ],
-          ),
         );
       },
     );

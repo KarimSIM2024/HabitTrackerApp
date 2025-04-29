@@ -1,13 +1,13 @@
-import 'package:flutter/cupertino.dart';
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_trackerr/core/layout/controller/cubit.dart';
 import 'package:habit_trackerr/core/layout/controller/state.dart';
-import 'package:habit_trackerr/core/shared/widgets/home_item/generator_home.dart';
 import 'package:hexcolor/hexcolor.dart';
 
 import '../../../../core/shared/widgets/my_button.dart';
 import '../../../../core/shared/widgets/myformfield.dart';
+import '../widgets/generator_home.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -84,7 +84,7 @@ class HomeScreen extends StatelessWidget {
                                   text: 'ex: Math Homework',
                                   validator: (String? value) {
                                     if (value!.isEmpty) {
-                                      return 'title must not be empty';
+                                      return 'Description must not be empty';
                                     }
                                     return null;
                                   },
@@ -99,10 +99,12 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 ),
                                 DropdownButtonFormField(
+                                  isExpanded: true,
                                   value: habit.categoryController.text,
-                                  items: habit.categoryDrop,
+                                  items: HabitCubit.categoryDrop,
                                   onChanged: (value) {
-                                    habit.categoryController.text = value.toString();
+                                    habit.categoryController.text =
+                                        value.toString();
                                   },
                                   decoration: InputDecoration(
                                     border: OutlineInputBorder(
@@ -119,11 +121,16 @@ class HomeScreen extends StatelessWidget {
                                     Expanded(
                                       child: MyButton(
                                         onPressed: () {
-                                          if (habit.formKey.currentState!.validate()) {
+                                          if (habit.formKey.currentState!
+                                              .validate()) {
                                             habit.insertDB(
                                               title: habit.titleController.text,
-                                              des: habit.descriptionController.text,
-                                              category: habit.categoryController.text,
+                                              des:
+                                                  habit
+                                                      .descriptionController
+                                                      .text,
+                                              category:
+                                                  habit.categoryController.text,
                                             );
                                             Navigator.pop(context);
                                           }
@@ -164,7 +171,14 @@ class HomeScreen extends StatelessWidget {
             backgroundColor: HexColor('#00468C'),
             child: Icon(Icons.add, color: Colors.white),
           ),
-          body: GeneratorHome(tasks: habit.habits),
+          body: ConditionalBuilder(
+            condition: habit.habits.isNotEmpty,
+            builder: (context) => GeneratorHome(tasks: habit.habits),
+            fallback:
+                (context) => Center(
+                  child: Icon(Icons.library_books_sharp, size: 100.0, color: Colors.grey),
+                ),
+          ),
         );
       },
     );

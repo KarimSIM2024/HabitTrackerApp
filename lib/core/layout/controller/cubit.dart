@@ -1,5 +1,4 @@
-import 'package:bloc/bloc.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_trackerr/core/layout/controller/state.dart';
@@ -17,51 +16,89 @@ class HabitCubit extends Cubit<HabitState> {
 
   int currentIndex = 0;
   Database? database;
-  var scaffoldKey=GlobalKey<ScaffoldState>();
-  var formKey=GlobalKey<FormState>();
+  static const Color primaryColor = Color(0xFF00468C);
+  static const Color secondaryColor = Color(0xFF4B7DAF);
+  var formKey = GlobalKey<FormState>();
   var titleController = TextEditingController();
   var descriptionController = TextEditingController();
   var priorityController = TextEditingController();
   var categoryController = TextEditingController();
 
-  List<BottomNavigationBarItem>items=[
-    BottomNavigationBarItem(icon: Icon(Icons.home_outlined,size: 30), label: 'Home'),
-    BottomNavigationBarItem(icon: Icon(Icons.category_outlined,size: 30), label: 'Category'),
-    BottomNavigationBarItem(icon: Icon(Icons.calendar_month,size: 30), label: 'Calender'),
-    BottomNavigationBarItem(icon: Icon(Icons.person,size: 30), label: 'Profile'),
+  static const List <BottomNavigationBarItem> items = [
+    BottomNavigationBarItem(
+      icon: Icon(Icons.home_outlined, size: 30),
+      label: 'Home',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.category_outlined, size: 30),
+      label: 'Category',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.calendar_month, size: 30),
+      label: 'Calender',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.person, size: 30),
+      label: 'Profile',
+    ),
   ];
 
-  List<DropdownMenuItem>categoryDrop=[
-    DropdownMenuItem(value: 'Urgent & Important', child: Text('Urgent & Important',style: TextStyle(color: Colors.red),)),
-    DropdownMenuItem(value: 'Not Urgent & Important', child: Text('Not Urgent & Important',style: TextStyle(color: Colors.orange))),
-    DropdownMenuItem(value: 'Urgent & Unimportant', child: Text('Urgent & Unimportant',style: TextStyle(color: Colors.blue))),
-    DropdownMenuItem(value: 'Not Urgent & Unimportant', child: Text('Not Urgent & Unimportant',style: TextStyle(color: Colors.green))),
+  static const List<DropdownMenuItem> categoryDrop = [
+    DropdownMenuItem(
+      value: 'Urgent & Important',
+      child: Text(
+        'Urgent & Important',
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        style: TextStyle(color: Colors.red),
+      ),
+    ),
+    DropdownMenuItem(
+      value: 'Not Urgent & Important',
+      child: Text(
+        'Not Urgent & Important',
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        style: TextStyle(color: Colors.orange),
+      ),
+    ),
+    DropdownMenuItem(
+      value: 'Urgent & Unimportant',
+      child: Text(
+        'Urgent & Unimportant',
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        style: TextStyle(color: Colors.blue),
+      ),
+    ),
+    DropdownMenuItem(
+      value: 'Not Urgent & Unimportant',
+      child: Text(
+        'Not Urgent & Unimportant',
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        style: TextStyle(color: Colors.green),
+      ),
+    ),
   ];
 
-  List<Widget>screens=[
+  static const List<Widget> screens = [
     HomeScreen(),
     CategoryScreen(),
     CalenderScreen(),
     ProfileScreen(),
   ];
-  List<String>titles=[
-    'Home',
-    'Category',
-    'Calender',
-    'Profile',
-  ];
+  static const List<String> titles = ['Home', 'Category', 'Calender', 'Profile'];
 
-  List<Map>habits=[];
-  List<Map>doneHabits=[];
-  List<Map>red=[];
-  List<Map>orange=[];
-  List<Map>blue=[];
-  List<Map>green=[];
+  List<Map> habits = [];
+  List<Map> doneHabits = [];
+  List<Map> red = [];
+  List<Map> orange = [];
+  List<Map> blue = [];
+  List<Map> green = [];
 
-
-
-  void changeBottomNav(int index){
-    currentIndex=index;
+  void changeBottomNav(int index) {
+    currentIndex = index;
     emit(HabitBottomNavState());
   }
 
@@ -80,14 +117,14 @@ class HabitCubit extends Cubit<HabitState> {
         // When creating the db, create the table
         await db
             .execute(
-          'CREATE TABLE information (id INTEGER PRIMARY KEY, title TEXT,description TEXT,category TEXT,state TEXT)',
-        )
+              'CREATE TABLE information (id INTEGER PRIMARY KEY, title TEXT,description TEXT,category TEXT,state TEXT)',
+            )
             .then((value) {
-          debugPrint('Table Created');
-        })
+              debugPrint('Table Created');
+            })
             .catchError((error) {
-          debugPrint('Error when create table ${error.toString()}');
-        });
+              debugPrint('Error when create table ${error.toString()}');
+            });
       },
       onOpen: (database) {
         getDB(database);
@@ -102,70 +139,64 @@ class HabitCubit extends Cubit<HabitState> {
   void insertDB({
     required String title,
     required String des,
-     String? priority,
-     String? category,
+    String? priority,
+    String? category,
   }) async {
     await database!
         .transaction((txn) async {
-      await txn.rawInsert(
-        'INSERT INTO information(title, description, category, state) VALUES(?, ?, ?, ?)',
-        [title, des, category, 'No'],
-      );
-    })
+          await txn.rawInsert(
+            'INSERT INTO information(title, description, category, state) VALUES(?, ?, ?, ?)',
+            [title, des, category, 'No'],
+          );
+        })
         .then((value) {
-
-      getDB(database);
-      emit(InsertDBState());
-      debugPrint('$value Data Inserted');
-    })
+          getDB(database);
+          emit(InsertDBState());
+          debugPrint('$value Data Inserted');
+        })
         .catchError((error) {
-      debugPrint('error when inserting data ${error.toString()}');
-    });
+          debugPrint('error when inserting data ${error.toString()}');
+        });
   }
 
   void getDB(database) async {
-    habits = [];
-    red=[];
-    orange=[];
-    blue=[];
-    green=[];
+    habits.clear();
+    red.clear();
+    orange.clear();
+    blue.clear();
+    green.clear();
     await database!.rawQuery('SELECT * FROM information').then((value) {
-      value.forEach((element) {
-        if(element['category']=='Urgent & Important'){
-          red.add(element);
-        }
-        else if(element['category']=='Not Urgent & Important'){
-          orange.add(element);
-        }
-        else if(element['category']=='Urgent & Unimportant'){
-          blue.add(element);
-        }
-        else if(element['category']=='Not Urgent & Unimportant'){
-          green.add(element);
-        }
+      for (final element in value) {
         habits.add(element);
-      });
+        switch (element['category']) {
+          case 'Urgent & Important': red.add(element); break;
+          case 'Not Urgent & Important': orange.add(element); break;
+          case 'Urgent & Unimportant': blue.add(element); break;
+          case 'Not Urgent & Unimportant': green.add(element); break;
+        }
+      }
 
-      red.sort((a, b) => a['state'].compareTo(b['state']),);
-      orange.sort((a,b) => a['state'].compareTo(b['state']),);
-      blue.sort((a,b) => a['state'].compareTo(b['state']),);
-      green.sort((a,b) => a['state'].compareTo(b['state']),);
-      habits.sort((a,b) => a['state'].compareTo(b['state']),);
+      red.sort((a, b) => a['state'].compareTo(b['state']));
+      orange.sort((a, b) => a['state'].compareTo(b['state']));
+      blue.sort((a, b) => a['state'].compareTo(b['state']));
+      green.sort((a, b) => a['state'].compareTo(b['state']));
+      habits.sort((a, b) => a['state'].compareTo(b['state']));
 
-      titleController.clear();
-      descriptionController.clear();
       emit(GetDBState());
     });
   }
 
   void updateStateDB({required int id, required String state}) async {
     await database!
-        .rawUpdate('UPDATE information SET  state = ? WHERE id = ?', [state, id])
+        .rawUpdate('UPDATE information SET  state = ? WHERE id = ?', [
+          state,
+          id,
+        ])
         .then((value) {
-      getDB(database);
-      emit(UpdateStateDBState());
-      debugPrint("Data Updated");
-    });
+          getDB(database);
+          emit(UpdateStateDBState());
+          debugPrint("Data Updated");
+        });
   }
 
   void updateDB({
@@ -175,27 +206,23 @@ class HabitCubit extends Cubit<HabitState> {
     required String category,
   }) async {
     await database!
-        .rawUpdate('UPDATE information SET  title = ?, description = ?, category = ? WHERE id = ?', [
-      title,
-      des,
-      category,
-      id,
-    ])
+        .rawUpdate(
+          'UPDATE information SET  title = ?, description = ?, category = ? WHERE id = ?',
+          [title, des, category, id],
+        )
         .then((value) {
-      getDB(database);
-      emit(UpdateTitleDBState());
-      debugPrint("Data Updated");
-    });
+          getDB(database);
+          emit(UpdateTitleDBState());
+          debugPrint("Data Updated");
+        });
   }
 
   void deleteDB({required int id}) async {
     await database!
         .rawDelete('DELETE FROM information WHERE id = ?', [id])
         .then((value) {
-      getDB(database);
-      emit(DeleteDBState());
-    });
+          getDB(database);
+          emit(DeleteDBState());
+        });
   }
-
 }
-
