@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'calendar_page.dart';
 
 void main() {
+  // Ensure Flutter bindings are initialized before using platform channels
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
     ));
-    
+
     return MaterialApp(
       title: 'Calendar App',
       debugShowCheckedModeBanner: false,
