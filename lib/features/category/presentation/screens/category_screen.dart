@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/layout/controller/cubit.dart';
 import '../../../../core/layout/controller/state.dart';
+import '../../../../core/shared/widgets/toast/toast_state.dart';
 import '../widgets/build_category.dart';
 
 class CategoryScreen extends StatelessWidget {
@@ -11,7 +12,11 @@ class CategoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HabitCubit, HabitState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        if(state is UpdateStateDBState){
+          showToast(msg: 'state Updated ', state: ToastStates.success);
+        }
+      },
       builder: (context, state) {
         final habit = HabitCubit.get(context);
         return Column(

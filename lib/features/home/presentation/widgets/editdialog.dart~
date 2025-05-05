@@ -8,19 +8,24 @@ import '../../../../core/shared/widgets/my_button.dart';
 import '../../../../core/shared/widgets/myformfield.dart';
 
 
-class EditDialog extends StatelessWidget {
+class EditDialog extends StatefulWidget {
   final Map model;
 
   const EditDialog({super.key, required this.model});
 
   @override
+  State<EditDialog> createState() => _EditDialogState();
+}
+
+class _EditDialogState extends State<EditDialog> {
+  @override
   Widget build(BuildContext context) {
     final habit = BlocProvider.of<HabitCubit>(context);
 
-    habit.titleController.text = model['title'];
-    habit.descriptionController.text = model['description'];
-    habit.categoryController.text = model['category'];
-    
+    habit.titleController.text = widget.model['title'];
+    habit.descriptionController.text = widget.model['description'];
+    habit.categoryController.text = widget.model['category'];
+
     return AlertDialog(
       title: Text(
         'Edit Your Task',
@@ -111,7 +116,7 @@ class EditDialog extends StatelessWidget {
                       onPressed: () {
                         if (habit.formKey.currentState!.validate()) {
                           habit.updateDB(
-                            id: model['id'],
+                            id: widget.model['id'],
                             title: habit.titleController.text,
                             des: habit.descriptionController.text,
                             category: habit.categoryController.text,

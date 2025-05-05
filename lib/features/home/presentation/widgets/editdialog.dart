@@ -20,7 +20,7 @@ class EditDialog extends StatefulWidget {
 class _EditDialogState extends State<EditDialog> {
   @override
   Widget build(BuildContext context) {
-    final habit = BlocProvider.of<HabitCubit>(context);
+    final habit = HabitCubit.get(context);
 
     habit.titleController.text = widget.model['title'];
     habit.descriptionController.text = widget.model['description'];

@@ -16,6 +16,8 @@ class HabitCubit extends Cubit<HabitState> {
 
   int currentIndex = 0;
   Database? database;
+  bool isSearching = false;
+  String searchQuery = '';
   static const Color primaryColor = Color(0xFF00468C);
   static const Color secondaryColor = Color(0xFF4B7DAF);
   var formKey = GlobalKey<FormState>();
@@ -97,8 +99,36 @@ class HabitCubit extends Cubit<HabitState> {
   List<Map> blue = [];
   List<Map> green = [];
 
+
+  void toggleSearch() {
+    isSearching = !isSearching;
+    if (!isSearching) {
+      searchQuery = '';
+    }
+    emit(SearchState());
+  }
+
+  void setSearchQuery(String query) {
+    searchQuery = query;
+    emit(SearchState());
+  }
+
+  List<Map> get filteredHabits {
+    if (searchQuery.isEmpty) return habits;
+    return habits.where((habit) {
+      String title = habit['title']?.toString().toLowerCase() ?? '';
+      return title.contains(searchQuery.toLowerCase());
+    }).toList();
+  }
+
+
+
   void changeBottomNav(int index) {
     currentIndex = index;
+    if (isSearching) {
+      isSearching = false;
+      searchQuery = '';
+    }
     emit(HabitBottomNavState());
   }
 

@@ -6,6 +6,8 @@ class HabitBottomNavState extends HabitState {}
 
 class CategoryUpdatedState extends HabitState {}
 
+class SearchState extends HabitState {}
+
 class CreateDBState extends HabitState {}
 class OpenDBState extends HabitState {}
 class InsertDBState extends HabitState {}

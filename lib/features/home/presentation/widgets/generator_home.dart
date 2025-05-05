@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import '../../../../core/layout/controller/cubit.dart';
 import 'build_item_home.dart';
 
-
 class GeneratorHome extends StatelessWidget {
-  final List tasks;
-  const GeneratorHome({super.key, required this.tasks});
+  final List<Map> model;
+  const GeneratorHome({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
-      return ListView.separated(
-        itemBuilder: (context, index) => BuildItemHome(model: tasks[index],),
-        separatorBuilder: (context, index) => SizedBox(height: 20.0,),
-        itemCount: tasks.length,
-      );
+
+    return ListView.separated(
+      itemBuilder:
+          (context, index) => BuildItemHome(model: model[index]),
+      separatorBuilder: (context, index) => SizedBox(height: 20.0),
+      itemCount: model.length,
+    );
   }
 }
