@@ -1,33 +1,28 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'calendar_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:task_out/core/constants/app_colors.dart';
+import 'package:task_out/core/utils/app_sizes.dart';
+import 'package:task_out/firebase_options.dart';
+import 'package:task_out/routes/app_router.dart';
 
-void main() {
-  // Ensure Flutter bindings are initialized before using platform channels
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Set status bar color to transparent
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-    ));
-
-    return MaterialApp(
-      title: 'Calendar App',
+    AppSizes.init(context);
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor: Colors.white,
-        fontFamily: 'Roboto',
-      ),
-      home: const CalendarPage(username: 'Matt'),
+      routerConfig: router,
+      theme: ThemeData(scaffoldBackgroundColor: AppColors.backgroundColor),
     );
   }
 }

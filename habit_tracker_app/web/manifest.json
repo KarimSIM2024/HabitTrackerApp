@@ -1,6 +1,6 @@
 {
-    "name": "habit_tracker_app",
-    "short_name": "habit_tracker_app",
+    "name": "task_out",
+    "short_name": "task_out",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
