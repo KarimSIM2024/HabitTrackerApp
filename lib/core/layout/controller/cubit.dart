@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:habit_trackerr/core/layout/controller/state.dart';
 import 'package:habit_trackerr/features/home/presentation/screens/home_screen.dart';
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 import '../../../features/calender/presentation/screens/calendar_screen.dart';
@@ -88,8 +89,7 @@ class HabitCubit extends Cubit<HabitState> {
   static const List<Widget> screens = [
     HomeScreen(),
     CategoryScreen(),
-    //CalenderScreen(),
-    CalendarScreen2(),
+    CalendarScreen(),
     ProfileScreen(),
   ];
   static const List<String> titles = [
@@ -126,6 +126,12 @@ class HabitCubit extends Cubit<HabitState> {
       return title.contains(searchQuery.toLowerCase());
     }).toList();
   }
+
+  List<Map> getEventsForDay(DateTime day) {
+    final formattedDay = DateFormat('yyyy-MM-dd').format(day);
+    return habits.where((habit) => habit['date'] == formattedDay).toList();
+  }
+
 
   void changeBottomNav(int index) {
     currentIndex = index;
