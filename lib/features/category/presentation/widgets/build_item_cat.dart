@@ -16,6 +16,7 @@ class BuildItemCat extends StatelessWidget {
       children: [
         Checkbox(
           value: isDone,
+          activeColor: Colors.green,
           onChanged:
               (value) =>
               BlocProvider.of<HabitCubit>(
