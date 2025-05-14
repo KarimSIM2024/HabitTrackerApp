@@ -1,0 +1,287 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:habit_trackerr/core/layout/controller/state.dart';
+import 'package:habit_trackerr/features/home/presentation/screens/home_screen.dart';
+import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart' as p;
+import '../../../features/calender/presentation/screens/calendar_screen.dart';
+import '../../../features/category/presentation/screens/category_screen.dart';
+import '../../../features/profile/presentation/screens/profile_screen.dart';
+
+class HabitCubit extends Cubit<HabitState> {
+  HabitCubit() : super(HabitInitialState());
+
+  static HabitCubit get(context) => BlocProvider.of(context);
+
+  DateTime selectedDay = DateTime.now();
+  DateTime focusedDay = DateTime.now();
+  int currentIndex = 0;
+  Database? database;
+  bool isSearching = false;
+  String searchQuery = '';
+  static const Color primaryColor = Color(0xFF00468C);
+  static const Color secondaryColor = Color(0xFF4B7DAF);
+  var formKey = GlobalKey<FormState>();
+  var titleController = TextEditingController();
+  var descriptionController = TextEditingController();
+  var priorityController = TextEditingController();
+  var categoryController = TextEditingController();
+
+  static const List<BottomNavigationBarItem> items = [
+    BottomNavigationBarItem(
+      icon: Icon(Icons.home_outlined, size: 30),
+      label: 'Home',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.category_outlined, size: 30),
+      label: 'Category',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.calendar_month, size: 30),
+      label: 'Calender',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.person, size: 30),
+      label: 'Profile',
+    ),
+  ];
+
+  static const List<DropdownMenuItem> categoryDrop = [
+    DropdownMenuItem(
+      value: 'Urgent & Important',
+      child: Text(
+        'Urgent & Important',
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        style: TextStyle(color: Colors.red),
+      ),
+    ),
+    DropdownMenuItem(
+      value: 'Not Urgent & Important',
+      child: Text(
+        'Not Urgent & Important',
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        style: TextStyle(color: Colors.orange),
+      ),
+    ),
+    DropdownMenuItem(
+      value: 'Urgent & Unimportant',
+      child: Text(
+        'Urgent & Unimportant',
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        style: TextStyle(color: Colors.blue),
+      ),
+    ),
+    DropdownMenuItem(
+      value: 'Not Urgent & Unimportant',
+      child: Text(
+        'Not Urgent & Unimportant',
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        style: TextStyle(color: Colors.green),
+      ),
+    ),
+  ];
+
+  static const List<Widget> screens = [
+    HomeScreen(),
+    CategoryScreen(),
+    CalendarScreen(),
+    ProfileScreen(),
+  ];
+  static const List<String> titles = [
+    'Home',
+    'Category',
+    'Calender',
+    'Profile',
+  ];
+
+  List<Map> habits = [];
+  List<Map> doneHabits = [];
+  List<Map> red = [];
+  List<Map> orange = [];
+  List<Map> blue = [];
+  List<Map> green = [];
+
+  void toggleSearch() {
+    isSearching = !isSearching;
+    if (!isSearching) {
+      searchQuery = '';
+    }
+    emit(SearchState());
+  }
+
+  void setSearchQuery(String query) {
+    searchQuery = query;
+    emit(SearchState());
+  }
+
+  List<Map> get filteredHabits {
+    if (searchQuery.isEmpty) return habits;
+    return habits.where((habit) {
+      String title = habit['title']?.toString().toLowerCase() ?? '';
+      return title.contains(searchQuery.toLowerCase());
+    }).toList();
+  }
+
+  List<Map> getEventsForDay(DateTime day) {
+    final formattedDay = DateFormat('yyyy-MM-dd').format(day);
+    return habits.where((habit) => habit['date'] == formattedDay).toList();
+  }
+
+
+  void changeBottomNav(int index) {
+    currentIndex = index;
+    if (isSearching) {
+      isSearching = false;
+      searchQuery = '';
+    }
+    emit(HabitBottomNavState());
+  }
+
+  void updateSelectedDay(DateTime day) {
+    selectedDay = day;
+    emit(CalendarDayUpdatedState());
+  }
+
+  void updateFocusedDay(DateTime day) {
+    focusedDay = day;
+    emit(CalendarDayUpdatedState());
+  }
+
+  void createDB() async {
+    var databasesPath = await getDatabasesPath();
+    String path = p.join(databasesPath, 'tasks.db');
+    openDB(path: path);
+    emit(CreateDBState());
+  }
+
+  void openDB({required String path}) async {
+    await openDatabase(
+      path,
+      version: 1,
+      onCreate: (Database db, int version) async {
+        // When creating the db, create the table
+        await db
+            .execute(
+              'CREATE TABLE information (id INTEGER PRIMARY KEY, title TEXT, description TEXT, category TEXT, state TEXT, date TEXT)',
+            )
+            .then((value) {
+              debugPrint('Table Created');
+            })
+            .catchError((error) {
+              debugPrint('Error when create table ${error.toString()}');
+            });
+      },
+      onOpen: (database) {
+        getDB(database);
+        emit(OpenDBState());
+        debugPrint('DB Opened');
+      },
+    ).then((value) {
+      database = value;
+    });
+  }
+
+  void insertDB({
+    required String title,
+    required String des,
+    String? priority,
+    String? category,
+    String? date,
+  }) async {
+    await database!
+        .transaction((txn) async {
+          await txn.rawInsert(
+            'INSERT INTO information(title, description, category, state, date) VALUES(?, ?, ?, ?, ?)',
+            [title, des, category, 'No', date],
+          );
+        })
+        .then((value) {
+          getDB(database);
+          emit(InsertDBState());
+          debugPrint('$value Data Inserted');
+        })
+        .catchError((error) {
+          debugPrint('error when inserting data ${error.toString()}');
+        });
+  }
+
+  void getDB(database) async {
+    habits.clear();
+    red.clear();
+    orange.clear();
+    blue.clear();
+    green.clear();
+    await database!.rawQuery('SELECT * FROM information').then((value) {
+      for (final element in value) {
+        habits.add(element);
+        switch (element['category']) {
+          case 'Urgent & Important':
+            red.add(element);
+            break;
+          case 'Not Urgent & Important':
+            orange.add(element);
+            break;
+          case 'Urgent & Unimportant':
+            blue.add(element);
+            break;
+          case 'Not Urgent & Unimportant':
+            green.add(element);
+            break;
+        }
+      }
+
+      red.sort((a, b) => a['state'].compareTo(b['state']));
+      orange.sort((a, b) => a['state'].compareTo(b['state']));
+      blue.sort((a, b) => a['state'].compareTo(b['state']));
+      green.sort((a, b) => a['state'].compareTo(b['state']));
+      habits.sort((a, b) => a['state'].compareTo(b['state']));
+
+      emit(GetDBState());
+    });
+  }
+
+  void updateStateDB({required int id, required String state}) async {
+    await database!
+        .rawUpdate('UPDATE information SET  state = ? WHERE id = ?', [
+          state,
+          id,
+        ])
+        .then((value) {
+          getDB(database);
+          emit(UpdateStateDBState());
+          debugPrint("Data Updated");
+        });
+  }
+
+  void updateDB({
+    required int id,
+    required String title,
+    required String des,
+    required String category,
+  }) async {
+    await database!
+        .rawUpdate(
+          'UPDATE information SET  title = ?, description = ?, category = ? WHERE id = ?',
+          [title, des, category, id],
+        )
+        .then((value) {
+          getDB(database);
+          emit(UpdateTitleDBState());
+          debugPrint("Data Updated");
+        });
+  }
+
+  void deleteDB({required int id}) async {
+    await database!
+        .rawDelete('DELETE FROM information WHERE id = ?', [id])
+        .then((value) {
+          getDB(database);
+          emit(DeleteDBState());
+        });
+  }
+}
