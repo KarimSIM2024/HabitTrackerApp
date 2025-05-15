@@ -1,10 +1,14 @@
-// lib/features/auth/presentation/cubit/auth_state.dart
 import '../../data/models/register_model.dart';
 import '../../data/models/login_model.dart';
 
 abstract class AuthState {}
 
 class AuthInitial extends AuthState {}
+class AuthLoading extends AuthState {}
+class AuthError extends AuthState {
+  final String message;
+  AuthError(this.message);
+}
 
 class PasswordVisibilityChanged extends AuthState {}
 class ConfirmPasswordVisibilityChanged extends AuthState {}

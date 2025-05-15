@@ -1,4 +1,3 @@
-// lib/core/shared/local/database_helper.dart
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -6,7 +5,7 @@ class DatabaseHelper {
   static const int _version = 1;
   static const String _dbName = 'AuthApp.db';
 
-  static Future<Database> _getDB() async {
+  static Future<Database> getDB() async { // Made public by removing the underscore
     return openDatabase(
       join(await getDatabasesPath(), _dbName),
       onCreate: (db, version) async {
@@ -28,13 +27,13 @@ class DatabaseHelper {
   }
 
   static Future<int> addUser(Map<String, dynamic> user) async {
-    final db = await _getDB();
+    final db = await getDB(); // Use the updated method name
     return await db.insert('User', user,
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   static Future<Map<String, dynamic>?> getUser(String email) async {
-    final db = await _getDB();
+    final db = await getDB(); // Use the updated method name
     final result = await db.query(
       'User',
       where: 'email = ?',
@@ -45,7 +44,7 @@ class DatabaseHelper {
   }
 
   static Future<int> verifyUser(String email) async {
-    final db = await _getDB();
+    final db = await getDB(); // Use the updated method name
     return await db.update(
       'User',
       {'isVerified': 1},
@@ -55,7 +54,7 @@ class DatabaseHelper {
   }
 
   static Future<List<Map<String, dynamic>>> getAllUsers() async {
-    final db = await _getDB();
+    final db = await getDB(); // Use the updated method name
     return await db.query('User');
   }
 }

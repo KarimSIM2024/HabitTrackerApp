@@ -1,4 +1,3 @@
-// lib/features/auth/presentation/cubit/auth_cubit.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/repositories/auth_repository.dart';
 import 'auth_state.dart';
@@ -28,7 +27,7 @@ class AuthCubit extends Cubit<AuthState> {
         email: email,
         password: password,
       );
-      emit(LoginSuccess(authModel));
+      emit(LoginSuccess(authModel)); // In login success
     } catch (e) {
       emit(LoginFailure(e.toString()));
     }
@@ -50,9 +49,19 @@ class AuthCubit extends Cubit<AuthState> {
         password: password,
         dateOfBirth: dateOfBirth,
       );
-      emit(RegisterSuccess(authModel));
+      emit(RegisterSuccess(authModel)); // In register success
     } catch (e) {
       emit(RegisterFailure(e.toString()));
+    }
+  }
+
+  Future<void> clearData() async {
+    emit(AuthLoading()); // Optional: Show loading state
+    try {
+      await authRepository.clearUserData();
+      emit(AuthInitial()); // Reset to initial state after clearing data
+    } catch (e) {
+      emit(AuthError('Failed to clear data: ${e.toString()}'));
     }
   }
 }

@@ -1,4 +1,3 @@
-// lib/features/auth/data/repositories/auth_repository.dart
 import '../models/register_model.dart';
 import '../models/login_model.dart';
 import '../../../../core/shared/network/local/database_helper.dart';
@@ -74,6 +73,16 @@ class AuthRepository {
       );
     } catch (e) {
       throw AuthException('Registration failed: ${e.toString()}');
+    }
+  }
+
+  Future<void> clearUserData() async {
+    try {
+      final db = await DatabaseHelper.getDB();
+      await db.delete('User');
+      await db.delete('Tasks');
+    } catch (e) {
+      throw Exception('Failed to clear user data: ${e.toString()}');
     }
   }
 }

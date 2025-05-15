@@ -1,7 +1,6 @@
 // lib/features/auth/presentation/screens/login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:habit_trackerr/core/layout/controller/cubit.dart';
 import 'package:habit_trackerr/features/auth/presentation/screens/register_screen.dart';
 import '../../../../core/layout/habit_layout.dart';
 import '../../../../core/shared/styles/colors.dart';
@@ -22,7 +21,6 @@ class LoginScreen extends StatelessWidget {
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-            HabitCubit.get(context).currentIndex=0;
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(const SnackBar(content: Text('Login successful!')));
