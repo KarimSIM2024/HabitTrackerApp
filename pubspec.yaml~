@@ -43,10 +43,7 @@ dependencies:
   bloc: ^9.0.0
   flutter_bloc: ^9.1.0
   shared_preferences: ^2.5.3
-  dio: ^5.8.0+1
-  shimmer: ^3.0.0
   conditional_builder_null_safety: ^0.0.6
-  smooth_page_indicator: ^1.2.1
   fluttertoast: ^8.2.12
   table_calendar: ^3.0.9
   get_it: ^8.0.3
